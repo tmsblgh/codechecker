@@ -17,9 +17,10 @@ RUN apt-get update \
        doxygen \
        gcc-multilib \
        git \
-       python-pip \
-       python-setuptools \
-       python-dev \
+       python3-dev \
+       python3-pip \
+       python3-setuptools \
+       python-virtualenv \
        libsasl2-dev \
        libldap2-dev \
        libssl-dev \
@@ -31,9 +32,9 @@ COPY . /codechecker
 
 WORKDIR "/codechecker"
 
-RUN pip install wheel
-RUN pip install -r analyzer/requirements_py/dev/requirements.txt
+RUN pip3 install wheel
+RUN pip3 install -r analyzer/requirements_py/dev/requirements.txt
 
 RUN make package
 
-CMD ["python2", "remote/analyze_handler.py"]
+CMD ["python3", "remote/analyze_handler.py"]

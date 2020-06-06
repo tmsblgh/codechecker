@@ -7,3 +7,5 @@ portalocker==1.7.0
 
 codechecker_api==6.27.0
 codechecker_api_shared==6.27.0
+
+thrift==0.11.0

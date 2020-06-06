@@ -20,6 +20,7 @@ RUN apt-get update \
        python-virtualenv \
        python-dev \
        libsasl2-dev \
+       python-dev \
        libldap2-dev \
        libssl-dev \
   && update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-7 100 \
