@@ -20,9 +20,9 @@ from enum import Enum
 import redis
 
 LOG = logging.getLogger('ANALYZE HANDLER')
-LOG.setLevel(logging.INFO)
+LOG.setLevel(logging.DEBUG)
 CH = logging.StreamHandler()
-CH.setLevel(logging.INFO)
+CH.setLevel(logging.DEBUG)
 FORMATTER = logging.Formatter(
     '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 CH.setFormatter(FORMATTER)
@@ -220,8 +220,9 @@ def analyze(analyze_id, analyze_dir_path):
     returncode = process.wait()
 
     LOG.debug('Command output: \n%s', stdout)
+
     with open(os.path.join(analyze_dir_path, 'output', 'stdout'), "w") as text_file:
-        text_file.write(stdout)
+        text_file.write(str(stdout))
 
     if returncode != 0:
         REDIS_DATABASE.hset(analyze_id, 'state',
@@ -230,7 +231,7 @@ def analyze(analyze_id, analyze_dir_path):
         LOG.error('Error output: %s', stderr)
 
         with open(os.path.join(analyze_dir_path, 'output', 'stderr'), "w") as text_file:
-            text_file.write(stderr)
+            text_file.write(str(stderr))
 
         LOG.error('Return code: %s', returncode)
 
