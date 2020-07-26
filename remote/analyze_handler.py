@@ -20,9 +20,9 @@ from enum import Enum
 import redis
 
 LOG = logging.getLogger('ANALYZE HANDLER')
-LOG.setLevel(logging.DEBUG)
+LOG.setLevel(logging.INFO)
 CH = logging.StreamHandler()
-CH.setLevel(logging.DEBUG)
+CH.setLevel(logging.INFO)
 FORMATTER = logging.Formatter(
     '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 CH.setFormatter(FORMATTER)
@@ -292,7 +292,7 @@ def main():
         if task is not None:
             LOG.info(
                 'Got a task: %s, starting analyze it, leftover task(s) %s', task, len(tasks))
-            analyze_id, part_number = str(task.decode('utf-8')).split('-')
+            analyze_id, part_number = str(task.decode('utf-8')).split('_')
 
             try:
                 analyze_dir_path = pre_analyze(analyze_id, part_number,
