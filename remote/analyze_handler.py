@@ -81,7 +81,8 @@ def pre_analyze(analyze_id, part_number, workspace, use_cache):
                             try:
                                 REDIS_DATABASE.set(
                                     readable_hash, file_in_bytes)
-                                LOG.debug(REDIS_DATABASE.get(readable_hash))
+                                LOG.debug(REDIS_DATABASE.get(
+                                    readable_hash).decode('UTF-8'))
                             except Exception:
                                 LOG.error(
                                     'Failed to store file %s in Redis.', file_name)
@@ -155,7 +156,7 @@ def pre_analyze(analyze_id, part_number, workspace, use_cache):
                 LOG.error('Failed to read in paths of dependencies.')
 
         for path in path_list:
-            if 'usr/include/' not in path:
+            if 'usr/include' not in path or 'usr/lib' not in path:
                 modified_command.append('-I' + sources_root_path + path)
 
         compile_command['command'] = modified_command
@@ -219,6 +220,8 @@ def analyze(analyze_id, analyze_dir_path):
     stdout, stderr = process.communicate()
     returncode = process.wait()
 
+    stdout = stdout.decode('UTF-8')
+
     LOG.debug('Command output: \n%s', stdout)
 
     with open(os.path.join(analyze_dir_path, 'output', 'stdout'), "w") as text_file:
@@ -227,6 +230,8 @@ def analyze(analyze_id, analyze_dir_path):
     if returncode != 0:
         REDIS_DATABASE.hset(analyze_id, 'state',
                             AnalyzeStatus.ANALYZE_FAILED.name)
+
+        stderr = stderr.decode('UTF-8')
 
         LOG.error('Error output: %s', stderr)
 
@@ -290,9 +295,10 @@ def main():
         task = REDIS_DATABASE.lpop('ANALYSES_QUEUE')
 
         if task is not None:
+            task = task.decode('utf-8')
             LOG.info(
                 'Got a task: %s, starting analyze it, leftover task(s) %s', task, len(tasks))
-            analyze_id, part_number = str(task.decode('utf-8')).split('_')
+            analyze_id, part_number = str(task).split('_')
 
             try:
                 analyze_dir_path = pre_analyze(analyze_id, part_number,
@@ -320,7 +326,7 @@ def main():
             LOG.info('No task.')
 
     def schedule():
-        # check analyses queue in every 3 seconds
+        # check analyses queue in every 10 seconds
         scheduler.enter(10, 1, check_queue, ())
         scheduler.run()
 
