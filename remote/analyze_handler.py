@@ -156,7 +156,7 @@ def pre_analyze(analyze_id, part_number, workspace, use_cache):
                 LOG.error('Failed to read in paths of dependencies.')
 
         for path in path_list:
-            if 'usr/include' not in path or 'usr/lib' not in path:
+            if 'usr/include' not in path and 'usr/lib' not in path:
                 modified_command.append('-I' + sources_root_path + path)
 
         compile_command['command'] = modified_command
